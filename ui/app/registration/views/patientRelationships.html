@@ -63,7 +63,7 @@
                     <span class="no-person" ng-show="showPersonNotFound(newRelationship)">{{ ::'REGISTRATION_LABEL_PERSON_NOT_FOUND' | translate}}</span>
                     <span ng-show="!showPersonNotFound(newRelationship)">{{newRelationship.content}}</span>
                 </div>
-                <div class="col col3 form-field">
+                <div class="col col3 form-field" ng-hide="{{ hideRelationShipDuration }}">
                     <strong class="till-text">{{ ::'REGISTRATION_LABEL_TILL' | translate}}</strong>
                     <div class="field-attribute showOn-small-screen">
                         <label>Till Date</label>
