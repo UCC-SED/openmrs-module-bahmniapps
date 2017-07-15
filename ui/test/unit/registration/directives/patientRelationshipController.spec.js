@@ -342,6 +342,7 @@ describe('PatientRelationshipController', function () {
     describe("hideRelationShipDuration", function () {
         it("should hide relationship till box when hideRelationShipDuration is set to true", function () {
             expect(_appService.getAppDescriptor().getConfigValue).toHaveBeenCalledWith("hideRelationShipDuration");
+            expect(scope.hideRelationShipDuration).toBeTruthy();
         });
     });
 });
