@@ -30,7 +30,7 @@ angular.module('bahmni.registration')
 
             var calculateBirthDate = function (configuredAssumedBirthDay) {
                 this.birthdate = age.calculateBirthDate(this.age);
-                if(configuredAssumedBirthDay && isOnlyBirthYearPresent(this.age) ) {
+                if (configuredAssumedBirthDay && isOnlyBirthYearPresent(this.age)) {
                     this.birthdate = getConfiguredBirthDate(configuredAssumedBirthDay, this.birthdate);
                 }
             };
