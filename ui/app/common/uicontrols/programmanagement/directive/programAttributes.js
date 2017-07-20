@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bahmni.common.uicontrols.programmanagment')
-    .controller('ProgramAttributesController', ['$scope', function ($scope) {
+    .controller('ProgramAttributesController', ['$scope', 'appService', function ($scope, appService) {
         $scope.getProgramAttributesMap = function () {
             var programAttributesMap = {};
             var programAttributes = $scope.patientProgram.attributes;
@@ -49,7 +49,33 @@ angular.module('bahmni.common.uicontrols.programmanagment')
             return format == "org.bahmni.module.bahmnicore.customdatatype.datatype.CodedConceptDatatype";
         };
 
+        var getProgramAttributeTypeAssignedToProgram = function (currentProgram, programAttributeTypes, programAttributeTypeMapConfig) {
+            var findCurrentProgramConfig = function (programConfig) {
+                return currentProgram.name === programConfig.programName;
+            };
+            var filterProgramAttributes = function (programAttributeType) {
+                if (!currentProgramMapConfig) {
+                    return true;
+                }
+                return _.indexOf(currentProgramMapConfig.attributeTypes, programAttributeType.name) >= 0;
+            };
+            if (!programAttributeTypeMapConfig) {
+                return programAttributeTypes;
+            }
+            var currentProgramMapConfig = _.find(programAttributeTypeMapConfig, findCurrentProgramConfig);
+            return _.filter(programAttributeTypes, filterProgramAttributes);
+        };
+
+        var init = function () {
+            var programAttributeDefinations = appService
+                .getAppDescriptor()
+                .getConfigValue("program").programSpecificAttribDefinition;
+
+            $scope.programAttributeTypes = getProgramAttributeTypeAssignedToProgram($scope.patientProgram.program, $scope.programAttributeTypes, programAttributeDefinations);
+        };
+
         $scope.patientProgram.patientProgramAttributes = $scope.getProgramAttributesMap();
+        init();
     }])
     .directive('programAttributes', function () {
         return {

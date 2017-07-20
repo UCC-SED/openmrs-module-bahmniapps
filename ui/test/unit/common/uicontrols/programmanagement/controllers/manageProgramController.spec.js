@@ -4,7 +4,7 @@ describe("ManageProgramController", function () {
 
     var scope, messageService, i = 0, programService, _provide, deferred, q, _spinner,
         retrospectiveEntryService, listOfPatientPrograms, programAttributeTypes, allPrograms,
-        controller, rootScope, confirmBox;
+        controller, rootScope, confirmBox, appService;
 
     var setUp = function () {
         return controller('ManageProgramController', {
@@ -21,6 +21,8 @@ describe("ManageProgramController", function () {
         _provide = $provide;
         programService = jasmine.createSpyObj('programService', ['getPatientPrograms', 'getAllPrograms',
             'deletePatientState', 'getProgramAttributeTypes', 'updatePatientProgram']);
+
+        appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
 
         programService.getPatientPrograms.and.callFake(function () {
             deferred = q.defer();
@@ -52,6 +54,21 @@ describe("ManageProgramController", function () {
             return deferred.promise;
         });
 
+        appService.getAppDescriptor = function() {
+            return {
+                getConfigValue: function () {
+                    return {
+                        "programSpecificAttribDefinition": [
+                            {
+                                "programName": "program",
+                                "attributeTypes": [ "mandatory"]
+                            }
+                        ]
+                    };
+                }
+            };
+        };
+
         confirmBox = jasmine.createSpy('confirmBox');
 
         _spinner = jasmine.createSpyObj('spinner', ['forPromise']);
@@ -59,6 +76,7 @@ describe("ManageProgramController", function () {
         retrospectiveEntryService = jasmine.createSpyObj('retrospectiveEntryService', ['getRetrospectiveDate']);
 
         $provide.value('programService', programService);
+        $provide.value('appService', appService);
         $provide.value('spinner', _spinner);
         $provide.value('messagingService', messageService);
         $provide.value('retrospectiveEntryService', retrospectiveEntryService);
@@ -498,6 +516,22 @@ describe("ManageProgramController", function () {
 
             expect(scope.programWorkflowStates.length).toBe(2);
         })
+    });
+
+    describe('update program workflow', function () {
+        it('should give program attribute types mapped to current program if configured', function () {
+            scope.$apply(setUp);
+            scope.programSelected = allPrograms[0];
+            var programAttributesForCurrentProgram = scope.getProgramAttributesForCurrentProgram();
+            expect(programAttributesForCurrentProgram.length).toBe(1);
+            expect(programAttributesForCurrentProgram[0].uuid).toBe(programAttributeTypes[1].uuid);
+            expect(programAttributesForCurrentProgram[0].name).toBe(programAttributeTypes[1].name);
+        });
+        it('should give all program attribute types if no program is selected', function () {
+            scope.$apply(setUp);
+            var programAttributesForCurrentProgram = scope.getProgramAttributesForCurrentProgram();
+            expect(programAttributesForCurrentProgram.length).toBe(2);
+        });
     });
 
     describe('get workflows', function () {

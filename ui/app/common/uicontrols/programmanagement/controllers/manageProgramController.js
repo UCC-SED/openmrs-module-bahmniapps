@@ -2,9 +2,9 @@
 
 angular.module('bahmni.common.uicontrols.programmanagment')
     .controller('ManageProgramController', ['$scope', 'retrospectiveEntryService', '$window', 'programService',
-        'spinner', 'messagingService', '$stateParams', '$q', 'confirmBox',
+        'spinner', 'messagingService', '$stateParams', '$q', 'confirmBox', 'appService',
         function ($scope, retrospectiveEntryService, $window, programService,
-                  spinner, messagingService, $stateParams, $q, confirmBox) {
+                  spinner, messagingService, $stateParams, $q, confirmBox, appService) {
             var DateUtil = Bahmni.Common.Util.DateUtil;
             $scope.programSelected = {};
             $scope.workflowStateSelected = {};
@@ -14,6 +14,8 @@ angular.module('bahmni.common.uicontrols.programmanagment')
             $scope.outComesForProgram = [];
             $scope.configName = $stateParams.configName;
             $scope.today = DateUtil.getDateWithoutTime(DateUtil.now());
+            $scope.allProgramAttributeTypes = [];
+            var programAttributeDefinations = appService.getAppDescriptor().getConfigValue("program").programSpecificAttribDefinition;
             var id = "#programEnrollmentContainer";
 
             var updateActiveProgramsList = function () {
@@ -59,6 +61,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                 }), id);
                 spinner.forPromise(programService.getProgramAttributeTypes().then(function (programAttributeTypes) {
                     $scope.programAttributeTypes = programAttributeTypes;
+                    $scope.allProgramAttributeTypes = programAttributeTypes;
                 }), id);
                 $scope.programSelected = null;
                 $scope.patientProgramAttributes = {};
@@ -233,8 +236,32 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                 program.editing = !program.editing;
             };
 
+            var getProgramAttributeTypeAssignedToProgram = function (currentProgram, programAttributeTypes, programAttributeTypeMapConfig) {
+                var findCurrentProgramConfig = function (programConfig) {
+                    return currentProgram.name === programConfig.programName;
+                };
+                var filterProgramAttributes = function (programAttributeType) {
+                    if (!currentProgramMapConfig) {
+                        return true;
+                    }
+                    return _.indexOf(currentProgramMapConfig.attributeTypes, programAttributeType.name) >= 0;
+                };
+                if (!programAttributeTypeMapConfig) {
+                    return programAttributeTypes;
+                }
+                var currentProgramMapConfig = _.find(programAttributeTypeMapConfig, findCurrentProgramConfig);
+                return _.filter(programAttributeTypes, filterProgramAttributes);
+            };
+
             $scope.setWorkflowStates = function (program) {
                 $scope.programWorkflowStates = $scope.getStates(program);
+            };
+
+            $scope.getProgramAttributesForCurrentProgram = function () {
+                if (!$scope.programSelected) {
+                    return $scope.allProgramAttributeTypes;
+                }
+                return getProgramAttributeTypeAssignedToProgram($scope.programSelected, $scope.allProgramAttributeTypes, programAttributeDefinations);
             };
 
             $scope.getStates = function (program) {
