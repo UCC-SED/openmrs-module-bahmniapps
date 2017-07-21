@@ -58,7 +58,7 @@ describe("ManageProgramController", function () {
             return {
                 getConfigValue: function () {
                     return {
-                        "programSpecificAttribDefinition": [
+                        "programSpecificAttributeTypesDefinition": [
                             {
                                 "programName": "program",
                                 "attributeTypes": [ "mandatory"]

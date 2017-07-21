@@ -8,7 +8,7 @@ describe("ensure that the directive program-attributes works properly", function
         return {
             getConfigValue: function () {
                 return {
-                    "programSpecificAttribDefinition": [
+                    "programSpecificAttributeTypesDefinition": [
                         {
                             "programName": "Cancer",
                             "attributeTypes": [ "Sample date attribute"]

@@ -67,11 +67,11 @@ angular.module('bahmni.common.uicontrols.programmanagment')
         };
 
         var init = function () {
-            var programAttributeDefinations = appService
+            var programSpecificAttributeTypesDefinition = appService
                 .getAppDescriptor()
-                .getConfigValue("program").programSpecificAttribDefinition;
+                .getConfigValue("program").programSpecificAttributeTypesDefinition;
 
-            $scope.programAttributeTypes = getProgramAttributeTypeAssignedToProgram($scope.patientProgram.program, $scope.programAttributeTypes, programAttributeDefinations);
+            $scope.programAttributeTypes = getProgramAttributeTypeAssignedToProgram($scope.patientProgram.program, $scope.programAttributeTypes, programSpecificAttributeTypesDefinition);
         };
 
         $scope.patientProgram.patientProgramAttributes = $scope.getProgramAttributesMap();

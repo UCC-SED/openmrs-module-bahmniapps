@@ -15,7 +15,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
             $scope.configName = $stateParams.configName;
             $scope.today = DateUtil.getDateWithoutTime(DateUtil.now());
             $scope.allProgramAttributeTypes = [];
-            var programAttributeDefinations = appService.getAppDescriptor().getConfigValue("program").programSpecificAttribDefinition;
+            var programSpecificAttributeTypesDefinition = appService.getAppDescriptor().getConfigValue("program").programSpecificAttributeTypesDefinition;
             var id = "#programEnrollmentContainer";
 
             var updateActiveProgramsList = function () {
@@ -261,7 +261,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                 if (!$scope.programSelected) {
                     return $scope.allProgramAttributeTypes;
                 }
-                return getProgramAttributeTypeAssignedToProgram($scope.programSelected, $scope.allProgramAttributeTypes, programAttributeDefinations);
+                return getProgramAttributeTypeAssignedToProgram($scope.programSelected, $scope.allProgramAttributeTypes, programSpecificAttributeTypesDefinition);
             };
 
             $scope.getStates = function (program) {
