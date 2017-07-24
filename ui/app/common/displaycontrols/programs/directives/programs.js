@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('bahmni.common.displaycontrol.programs')
-    .directive('programs', ['programService', '$state', 'spinner',
-        function (programService, $state, spinner) {
+    .directive('programs', ['programService', '$state', 'spinner', 'appService',
+        function (programService, $state, spinner, appService) {
             var controller = function ($scope) {
+                var programSpecificAttributeTypesDefinition = appService.getAppDescriptor().getConfigValue("program").programSpecificAttributeTypesDefinition;
                 $scope.initialization = programService.getPatientPrograms($scope.patient.uuid, true, $state.params.enrollment).then(function (patientPrograms) {
                     if (_.isEmpty(patientPrograms.activePrograms) && _.isEmpty(patientPrograms.endedPrograms)) {
                         $scope.$emit("no-data-present-event");
@@ -25,6 +26,25 @@ angular.module('bahmni.common.displaycontrol.programs')
                 };
                 $scope.hasStates = function (program) {
                     return !_.isEmpty(program.states);
+                };
+                var getProgramAttributeTypeAssignedToProgram = function (currentProgram, programAttributes, programAttributeTypeMapConfig) {
+                    var findCurrentProgramConfig = function (programConfig) {
+                        return currentProgram.display === programConfig.programName;
+                    };
+                    var filterProgramAttributes = function (programAttribute) {
+                        if (!currentProgramMapConfig) {
+                            return true;
+                        }
+                        return _.indexOf(currentProgramMapConfig.attributeTypes, programAttribute.attributeType.name) >= 0;
+                    };
+                    if (!programAttributeTypeMapConfig) {
+                        return programAttributes;
+                    }
+                    var currentProgramMapConfig = _.find(programAttributeTypeMapConfig, findCurrentProgramConfig);
+                    return _.filter(programAttributes, filterProgramAttributes);
+                };
+                $scope.getDefinedProgramAttributes = function (program) {
+                    return getProgramAttributeTypeAssignedToProgram(program, program.attributes, programSpecificAttributeTypesDefinition);
                 };
                 $scope.getAttributeValue = function (attribute) {
                     if (isDateFormat(attribute.attributeType.format)) {
