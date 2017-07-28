@@ -1,7 +1,7 @@
 'use strict';
 describe("Program display control", function () {
 
-    var compile, rootScope, programService, translateFilter, _provide;
+    var compile, rootScope, programService, translateFilter, _provide, appService;
     var DateUtil = Bahmni.Common.Util.DateUtil;
     var element, q;
 
@@ -12,8 +12,25 @@ describe("Program display control", function () {
     beforeEach(module(function ($provide) {
         programService = jasmine.createSpyObj('programService', ['getPatientPrograms', 'getProgramStateConfig']);
         translateFilter = jasmine.createSpy('translateFilter');
+        appService = jasmine.createSpy('appService', ['getAppDescriptor']);
         $provide.value('programService', programService);
         $provide.value('translateFilter', translateFilter);
+        $provide.value('appService', appService);
+        appService.getAppDescriptor = function() {
+            return {
+                getConfigValue: function () {
+                    return {
+                        "programSpecificAttributeTypesDefinition": [
+                            {
+                                "programName": "HIV Program",
+                                "attributeTypes": [ "Sample concept attribute"]
+                            }
+                        ]
+                    };
+                }
+            };
+        };
+
         _provide = $provide;
         $provide.value('$state', {params: {}})
     }));
