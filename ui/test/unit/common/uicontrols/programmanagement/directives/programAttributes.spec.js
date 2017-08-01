@@ -11,7 +11,7 @@ describe("ensure that the directive program-attributes works properly", function
                     "programSpecificAttributeTypesDefinition": [
                         {
                             "programName": "Cancer",
-                            "attributeTypes": [ "Sample date attribute"]
+                            "attributeTypes": [ "Sample regex attribute", "Sample date attribute"]
                         }
                     ]
                 };
@@ -83,7 +83,9 @@ describe("ensure that the directive program-attributes works properly", function
     });
 
     it('should filter attribute types based on program if programSpecificAttribDefinition is configured', function () {
-       expect(scope.programAttributeTypes.length).toBe(1);
+       expect(scope.programAttributeTypes.length).toBe(2);
+       expect(scope.programAttributeTypes[0].name).toBe('Sample regex attribute');
+
     });
 
     var patientProgram = {

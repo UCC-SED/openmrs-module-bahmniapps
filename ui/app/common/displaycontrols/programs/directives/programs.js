@@ -27,6 +27,14 @@ angular.module('bahmni.common.displaycontrol.programs')
                 $scope.hasStates = function (program) {
                     return !_.isEmpty(program.states);
                 };
+                var sortProgramAttributeTypesBasedOnConfiguration = function (availableProgramAttributesForProgram, currentProgramMapConfig) {
+                    var sortProgramAttributeTypes = function (programAttributeType) {
+                        return _.find(availableProgramAttributesForProgram, function (attribute) {
+                            return attribute.attributeType.name === programAttributeType;
+                        });
+                    };
+                    return _.map(currentProgramMapConfig.attributeTypes, sortProgramAttributeTypes);
+                };
                 var getProgramAttributeTypeAssignedToProgram = function (currentProgram, programAttributes, programAttributeTypeMapConfig) {
                     var findCurrentProgramConfig = function (programConfig) {
                         return currentProgram.display === programConfig.programName;
@@ -41,7 +49,12 @@ angular.module('bahmni.common.displaycontrol.programs')
                         return programAttributes;
                     }
                     var currentProgramMapConfig = _.find(programAttributeTypeMapConfig, findCurrentProgramConfig);
-                    return _.filter(programAttributes, filterProgramAttributes);
+                    var availableProgramAttributesForProgram = _.filter(programAttributes, filterProgramAttributes);
+                    if (!currentProgramMapConfig) {
+                        return availableProgramAttributesForProgram;
+                    } else {
+                        return sortProgramAttributeTypesBasedOnConfiguration(availableProgramAttributesForProgram, currentProgramMapConfig);
+                    }
                 };
                 $scope.getDefinedProgramAttributes = function (program) {
                     return getProgramAttributeTypeAssignedToProgram(program, program.attributes, programSpecificAttributeTypesDefinition);

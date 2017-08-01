@@ -236,6 +236,14 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                 program.editing = !program.editing;
             };
 
+            var sortProgramAttributeTypesBasedOnConfiguration = function (availableProgramAttributeTypesForProgram, currentProgramMapConfig) {
+                var sortProgramAttributeTypes = function (programAttributeType) {
+                    return _.find(availableProgramAttributeTypesForProgram, function (attributeType) {
+                        return attributeType.name === programAttributeType;
+                    });
+                };
+                return _.map(currentProgramMapConfig.attributeTypes, sortProgramAttributeTypes);
+            };
             var getProgramAttributeTypeAssignedToProgram = function (currentProgram, programAttributeTypes, programAttributeTypeMapConfig) {
                 var findCurrentProgramConfig = function (programConfig) {
                     return currentProgram.name === programConfig.programName;
@@ -250,7 +258,12 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                     return programAttributeTypes;
                 }
                 var currentProgramMapConfig = _.find(programAttributeTypeMapConfig, findCurrentProgramConfig);
-                return _.filter(programAttributeTypes, filterProgramAttributes);
+                var availableProgramAttributeTypesForProgram = _.filter(programAttributeTypes, filterProgramAttributes);
+                if (!currentProgramMapConfig) {
+                    return availableProgramAttributeTypesForProgram;
+                } else {
+                    return sortProgramAttributeTypesBasedOnConfiguration(availableProgramAttributeTypesForProgram, currentProgramMapConfig);
+                }
             };
 
             $scope.setWorkflowStates = function (program) {
