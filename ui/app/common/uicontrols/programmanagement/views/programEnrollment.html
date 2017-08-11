@@ -50,9 +50,9 @@
                     </article>
 
 
-                    <article class="field-table-row" ng-repeat="attribute in getProgramAttributesForCurrentProgram()">
+                    <article class="field-table-row" ng-repeat="attribute in programAttributeTypes">
                         <attribute-types target-model="patientProgramAttributes" attribute="attribute"
-                                         is-form="true"></attribute-types>
+                                         is-form="true" handle-change="handleProgramAttributeUpdate"></attribute-types>
                     </article>
                     <div class="field-table-row">
                         <input class="fr" type="submit" value="{{'PROGRAM_MANAGEMENT_ENROLL_KEY' | translate}}"/>

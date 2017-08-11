@@ -29,7 +29,7 @@
         <div class="left" data-ng-switch-when="org.bahmni.module.bahmnicore.customdatatype.datatype.CodedConceptDatatype">
             <select id="{{::attribute.name}}" ng-model="targetModel[attribute.name]"
                     ng-options="a.conceptId as a.description for a in ::attribute.answers"
-                    ng-disabled="::isReadOnly(attribute.name)" ng-required="{{::attribute.required}}" ng-blur="::handleUpdate(attribute.name)">
+                    ng-disabled="::isReadOnly(attribute.name)" ng-required="{{::attribute.required}}" ng-blur="::handleUpdate(attribute.name)" ng-change="::handleChange(attribute.name)">
                 <option value=""></option>
             </select>
         </div>

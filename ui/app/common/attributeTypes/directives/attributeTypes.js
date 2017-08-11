@@ -10,6 +10,7 @@ angular.module('bahmni.common.attributeTypes', []).directive('attributeTypes', [
             getAutoCompleteList: '&',
             getDataResults: '&',
             handleUpdate: '&',
+            handleChange: '&',
             isReadOnly: '&',
             isForm: '=?'
         },
@@ -22,6 +23,7 @@ angular.module('bahmni.common.attributeTypes', []).directive('attributeTypes', [
             $scope.isAutoComplete = $scope.isAutoComplete() || function () { return false; };
             $scope.isReadOnly = $scope.isReadOnly() || function () { return false; };
             $scope.handleUpdate = $scope.handleUpdate() || function () { return false; };
+            $scope.handleChange = $scope.handleChange() || function () { return false; };
 
             $scope.appendConceptNameToModel = function (attribute) {
                 var attributeValueConceptType = $scope.targetModel[attribute.name];
