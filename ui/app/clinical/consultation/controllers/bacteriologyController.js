@@ -51,6 +51,7 @@ angular.module('bahmni.clinical')
 
             $scope.createNewSpecimen = function () {
                 var newSpecimen = new Bahmni.Clinical.Specimen(null, $scope.allSamples);
+                console.log($scope.newSpecimens);
                 $scope.newSpecimens.push(newSpecimen);
             };
 

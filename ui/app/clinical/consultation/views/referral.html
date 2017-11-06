@@ -1,0 +1,23 @@
+<div class="clinical-observations" focus-on-input-errors>
+    <div ng-class="{'disableBacteriologyInRetroMode':isRetrospectiveMode()}">
+        <div class="infoMsgRetrospectiveModeEnabled" ng-if="isRetrospectiveMode()">
+            <i class="fa fa-info-circle"></i>
+            <span><strong>Transfer</strong> entry is <strong>NOT allowed</strong> in retrospective mode</span>
+        </div>
+        <div  class="sample-container">
+            <form class="form" >
+                <section class="section-grid">
+                    <div class="box concept-set-container" id="{{ scrollOnEdit }}">
+                      
+                        <div >
+                            <concept-set show-title="false"  patient="::patient" concept-set-name="resultsConceptName"
+                                         consultation="consultation"   observations="consultation.observations" collapse-inner-sections="true"></concept-set>
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </div>
+        
+    </div>
+</div>
+
