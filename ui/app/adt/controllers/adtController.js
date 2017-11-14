@@ -108,7 +108,6 @@ angular.module('bahmni.adt')
                 $scope.visitControl = new Bahmni.Common.VisitControl(visitTypes, defaultVisitType, visitService);
                 $scope.dashboard = Bahmni.Common.DisplayControl.Dashboard.create($scope.dashboardConfig || {}, $filter);
                 $scope.sectionGroups = $scope.dashboard.getSections($scope.diseaseTemplates);
-
                 return getVisit().then(dispositionService.getDispositionActions).then(function (response) {
                     if (response.data && response.data.results && response.data.results.length) {
                         $scope.dispositionActions = getDispositionActions(response.data.results[0].answers);

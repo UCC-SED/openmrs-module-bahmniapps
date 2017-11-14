@@ -48,7 +48,7 @@
                     </div>
                 </article>
 
-                <article class="fl" ng-repeat="attribute in programAttributeTypes">
+                <article class="fl" ng-repeat="attribute in programAttributeTypes | unique:'attribute.uuid'">
                     <attribute-types target-model="patientProgramAttributes" attribute="attribute"
                                      is-form="true"></attribute-types>
                 </article>

@@ -8,6 +8,12 @@ angular.module('bahmni.common.domain')
                 "&v=custom:(uuid,name,answers:(uuid,name,mappings))", {cache: true});
         };
 
+        var getproposedWards = function () {
+            return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl +
+                "&name=" + Bahmni.Common.Constants.proposedWardsConcept +
+                "&v=custom:(uuid,name,answers:(uuid,name,mappings))", {cache: true});
+        };
+
         var getDispositionNoteConcept = function () {
             return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl +
                 "&name=" + Bahmni.Common.Constants.dispositionNoteConcept +
@@ -31,6 +37,7 @@ angular.module('bahmni.common.domain')
 
         return {
             getDispositionActions: getDispositionActions,
+            getproposedWards:getproposedWards,
             getDispositionNoteConcept: getDispositionNoteConcept,
             getDispositionByVisit: getDispositionByVisit,
             getDispositionByPatient: getDispositionByPatient

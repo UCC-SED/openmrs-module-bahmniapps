@@ -30,8 +30,9 @@ angular.module('bahmni.common.conceptSet')
 
                 var updateObservationsOnRootScope = function () {
                     if ($scope.rootObservation) {
-                        console.log('kuku');
+
                         console.log($scope.rootObservation);
+
                         console.log($scope.observations);
                         for (var i = 0; i < $scope.observations.length; i++) {
                             if ($scope.observations[i].concept.uuid === $scope.rootObservation.concept.uuid) {

@@ -24,6 +24,11 @@ angular.module('bahmni.common.displaycontrol.disposition')
 
                 $scope.getNotes = function (disposition) {
                     if (disposition.additionalObs[0] && disposition.additionalObs[0].value) {
+						var data = disposition.additionalObs[0].value.split("**//**");
+						disposition.additionalObs[0].value = data[0];
+						if(data[1]){
+						$scope.proposedWard= data[1];
+					}
                         return disposition.additionalObs[0].value;
                     }
                     return "";

@@ -299,6 +299,18 @@ angular.module('consultation')
                     }
                 }
             })
+            .state('patient.dashboard.show.printPriv', {
+                url: '/printPriv',
+                params: {
+                    cachebuster: null
+                },
+                views: {
+                    'consultation-content': {
+                        templateUrl: 'consultation/views/printPriv.html',
+                        controller: 'printPrivController'
+                    }
+                }
+            })
             .state('patient.dashboard.show.bacteriology', {
                 url: '/bacteriology',
                 params: {

@@ -155,6 +155,8 @@ Bahmni.Common = Bahmni.Common || {};
         impressionConcept: "Impression",
         qualifiedByRelationshipType: "qualified-by",
         dispositionConcept: "Disposition",
+        proposedWardsConcept: "Wards",
+        proposedWardsuuidConcept: "469ec8cd-946f-4f7c-8d17-59994748b5e1",
         dispositionGroupConcept: "Disposition Set",
         dispositionNoteConcept: "Disposition Note",
         ruledOutDiagnosisConceptName: 'Ruled Out Diagnosis',

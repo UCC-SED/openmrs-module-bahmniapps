@@ -4,7 +4,7 @@ angular.module('bahmni.clinical')
     .controller('DispositionController', ['$scope', '$q', 'dispositionService', 'retrospectiveEntryService', 'spinner', function ($scope, $q, dispositionService, retrospectiveEntryService, spinner) {
         var consultation = $scope.consultation;
         var allDispositions = [];
-
+			
         var getPreviousDispositionNote = function () {
             if (consultation.disposition && (!consultation.disposition.voided)) {
                 return _.find(consultation.disposition.additionalObs, function (obs) {
@@ -15,6 +15,14 @@ angular.module('bahmni.clinical')
 
         var getDispositionNotes = function () {
             var previousDispositionNotes = getPreviousDispositionNote();
+            //spit value to get proposed Ward
+            if(previousDispositionNotes)
+            {
+				var dataAray = previousDispositionNotes.value.split("**//**");
+				previousDispositionNotes.value=dataAray[0];
+				$scope.wardCode= dataAray[1];
+				
+			}
             if (getSelectedConceptName($scope.dispositionCode, $scope.dispositionActions)) {
                 return _.cloneDeep(previousDispositionNotes) || {concept: {uuid: $scope.dispositionNoteConceptUuid}};
             }
@@ -22,15 +30,32 @@ angular.module('bahmni.clinical')
                 return {concept: {uuid: $scope.dispositionNoteConceptUuid}};
             }
         };
+        
+      
 
         var getDispositionActionsPromise = function () {
             return dispositionService.getDispositionActions().then(function (response) {
+                getWards();
                 allDispositions = new Bahmni.Clinical.DispostionActionMapper().map(response.data.results[0].answers);
                 $scope.dispositionActions = filterDispositionActions(allDispositions, $scope.$parent.visitSummary);
                 $scope.dispositionCode = consultation.disposition && (!consultation.disposition.voided) ? consultation.disposition.code : null;
                 $scope.dispositionNote = getDispositionNotes();
+              
             });
         };
+
+        var getWards = function()
+        {
+            return dispositionService.getproposedWards().then(function (response) {
+                $scope.wards = response.data.results[0].answers;
+               
+                console.log();
+                
+            });
+        };
+
+
+        
 
         var findAction = function (dispositions, action) {
             var undoDischarge = _.find(dispositions, action);
@@ -83,8 +108,14 @@ angular.module('bahmni.clinical')
             var selectedDispositionConceptName = _.findLast(dispositions, {code: dispositionCode}) || {};
             return selectedDispositionConceptName.name;
         };
+        
+        var getSelectedWard = function () {
+			
+			
+		};
 
         var getSelectedDisposition = function () {
+			
             if ($scope.dispositionCode) {
                 $scope.dispositionNote.voided = !$scope.dispositionNote.value;
                 var disposition = {
@@ -93,9 +124,15 @@ angular.module('bahmni.clinical')
                     code: $scope.dispositionCode,
                     conceptName: getSelectedConceptName($scope.dispositionCode, allDispositions)
                 };
+               console.log($scope.wardSelected);
                 if ($scope.dispositionNote.value || $scope.dispositionNote.uuid) {
+					var dispositionNote=$scope.dispositionNote.value.split("**//**");
+					$scope.dispositionNote.value = dispositionNote[0];
+					$scope.dispositionNote.value = $scope.dispositionNote.value+"**//**"+$scope.wardCode;
                     disposition.additionalObs = [_.clone($scope.dispositionNote)];
                 }
+               
+                console.log(disposition);
                 return disposition;
             }
         };
