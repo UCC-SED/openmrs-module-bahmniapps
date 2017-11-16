@@ -47,8 +47,7 @@
                         <input type="date" max="{{today}}" ng-model="programEnrollmentDate" ng-required="true">
                     </div>
                 </article>
-
-                <article class="fl" ng-repeat="attribute in programAttributeTypes | unique:'attribute.uuid'">
+                <article class="fl" ng-repeat="attribute in programAttributeTypes ">
                     <attribute-types target-model="patientProgramAttributes" attribute="attribute"
                                      is-form="true"></attribute-types>
                 </article>

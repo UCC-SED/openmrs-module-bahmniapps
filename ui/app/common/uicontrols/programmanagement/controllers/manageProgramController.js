@@ -58,7 +58,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
                     $scope.allPrograms.showProgramSection = true;
                 }), id);
                 spinner.forPromise(programService.getProgramAttributeTypes().then(function (programAttributeTypes) {
-                    $scope.programAttributeTypes = programAttributeTypes;
+                    $scope.programAttributeTypes = removeDuplicates(programAttributeTypes, "uuid");
                 }), id);
                 $scope.programSelected = null;
                 $scope.patientProgramAttributes = {};
@@ -66,6 +66,22 @@ angular.module('bahmni.common.uicontrols.programmanagment')
 
                 updateActiveProgramsList();
             };
+
+			function removeDuplicates(originalArray, prop) {
+				var newArray = [];
+				var lookupObject  = {};
+
+				for(var i in originalArray) {
+			lookupObject[originalArray[i][prop]] = originalArray[i];
+					}
+
+					for(i in lookupObject) {
+				newArray.push(lookupObject[i]);
+					}
+					
+			return newArray;
+				};
+
 
             var successCallback = function () {
                 messagingService.showMessage("info", "CLINICAL_SAVE_SUCCESS_MESSAGE_KEY");
