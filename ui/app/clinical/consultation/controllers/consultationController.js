@@ -9,7 +9,6 @@ angular.module('bahmni.clinical').controller('ConsultationController',
                   spinner, encounterService, messagingService, sessionService, retrospectiveEntryService, patientContext, $q,
                   patientVisitHistoryService, $stateParams, $window, visitHistory, clinicalDashboardConfig, appService,
                   ngDialog, $filter, configurations, offlineService, visitConfig, conditionsService) {
-		   
             var DateUtil = Bahmni.Common.Util.DateUtil;
             var getPreviousActiveCondition = Bahmni.Common.Domain.Conditions.getPreviousActiveCondition;
             $scope.togglePrintList = false;
