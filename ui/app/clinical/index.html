@@ -70,7 +70,7 @@
         <script src="../components/react/react.min.js"></script>
         <script src="../components/react/react-dom.min.js"></script>
         <script src="../lib/angular-workers/dist/angular-workers.js"></script>
-		
+
         <script src="../components/bahmni-form-controls/helpers.js"></script>
         <script src="../components/bahmni-form-controls/bundle.js"></script>
 
@@ -80,7 +80,6 @@
         <script src="../common/util/init.js"></script>
         <script src="../common/models/init.js"></script>
         <script src="../common/models/age.js"></script>
-        <script src="../common/models/auditLogEventDetails.js"></script>
         <script src="../common/offline/init.js"></script>
         <script src="../common/offline/offlineService.js"></script>
         <script src="../common/offline/services/dbNameService.js"></script>
@@ -193,8 +192,6 @@
         <script src="../common/domain/services/retrospectiveEntryService.js"></script>
 
         <script src="../common/domain/services/dispositionService.js"></script>
-        <script src="../common/domain/services/referralService.js"></script>
-      
         <script src="../common/domain/services/visitDocumentService.js"></script>
         <script src="../common/domain/services/bedService.js"></script>
 
@@ -343,6 +340,7 @@
         <script src="../common/uicontrols/programmanagement/init.js"></script>
         <script src="../common/uicontrols/programmanagement/controllers/manageProgramController.js"></script>
         <script src="../common/uicontrols/programmanagement/mappers/programHelper.js"></script>
+        <script src="../common/uicontrols/programmanagement/mappers/programAttributesHelper.js"></script>
         <script src="../common/uicontrols/programmanagement/directive/managePrograms.js"></script>
         <script src="../common/uicontrols/programmanagement/directive/programAttributes.js"></script>
         <script src="../common/uicontrols/programmanagement/directive/timeline.js"></script>
@@ -387,7 +385,7 @@
         <script src="common/controllers/visitController.js"></script>
         <script src="common/controllers/patientListHeaderController.js"></script>
         <script src="common/controllers/consultationContextController.js"></script>
- 
+
         <script src="common/utils/c3Chart.js"></script>
 
         <!--All dashboard includes-->
@@ -435,13 +433,10 @@
         <script src="consultation/services/otherInvestigationsConceptsMapper.js"></script>
         <script src="consultation/services/patientVisitHistoryService.js"></script>
         <script src="consultation/services/labTestsProvider.js"></script>
-       
         <script src="consultation/services/otherTestsProvider.js"></script>
         <script src="consultation/services/Notifier.js"></script>
 
         <script src="consultation/services/treatmentConfig.js"></script>
-         <script src="consultation/services/printPrivService.js"></script>
-         
         <script src="consultation/filters/observationValue.js"></script>
         <script src="consultation/directives/buttonsRadio.js"></script>
         <script src="consultation/directives/orderSelector.js"></script>
@@ -459,8 +454,6 @@
         <script src="consultation/controllers/treatmentController.js"></script>
         <script src="consultation/controllers/addTreatmentController.js"></script>
         <script src="consultation/controllers/dispositionController.js"></script>
-        <script src="consultation/controllers/referralController.js"></script>
-        <script src="consultation/controllers/printPrivController.js"></script>
         <script src="consultation/controllers/consultationController.js"></script>
         <script src="consultation/controllers/conceptSetPageController.js"></script>
         <script src="consultation/controllers/drugOrderHistoryController.js"></script>
@@ -549,7 +542,6 @@
         <script src="initialization.js"></script>
         <script src="ordersTabInitialization.js"></script>
         <script src="bacteriologyTabInitialization.js"></script>
-         <script src="referralTabInitialization.js"></script>
         <script src="patientInitialization.js"></script>
         <script src="visitHistoryInitialization.js"></script>
         <script src="consultation/consultationInitialization.js"></script>
@@ -564,7 +556,7 @@
 
         <!-- @ifdef ONLINE -->
         <!-- build:js clinical.min.web.js -->
-        <script src="../common/services/formService.js"></script>
+        <script src="consultation/services/observationFormService.js"></script>
         <script src="../common/domain/services/visitService.js"></script>
         <script src="../common/domain/services/diagnosisService.js"></script>
         <script src="../common/domain/services/conditionsService.js"></script>
@@ -592,6 +584,7 @@
         <script src="/bahmni_config/openmrs/apps/customDisplayControl/js/customControl.js"></script>
         <script src="/bahmni_config/openmrs/apps/clinical/formConditions.js"></script>
         <script src="/implementation_config/openmrs/apps/clinical/formConditions.js"></script>
+        <script src="/bahmni_config/openmrs/apps/clinical/programFormConditions.js"></script>
         <!-- @endif -->
 
         <!-- @ifdef OFFLINE -->
@@ -611,7 +604,7 @@
         <!-- @ifdef CHROME -->
         <!-- build:js clinical.min.chrome.js -->
         <!-- comments:toggle html -->
-        <!--<script src="consultation/offline/offlineFormService.js"></script>-->
+        <!--<script src="consultation/offline/offlineObservationFormService.js"></script>-->
         <!--<script src="../common/domain/offline/chrome/chromeVisitService.js"></script>-->
         <!--<script src="../common/domain/offline/chrome/chromeEncounterService.js"></script>-->
         <!--<script src="../common/patient/offline/chrome/chromePatientService.js"></script>-->
@@ -640,7 +633,7 @@
         <!-- @ifdef ANDROID -->
         <!-- build:js clinical.min.android.js -->
         <!-- comments:toggle html -->
-        <!--<script src="consultation/offline/offlineFormService.js"></script>-->
+        <!--<script src="consultation/offline/offlineObservationFormService.js"></script>-->
         <!--<script src="../common/domain/offline/android/androidVisitService.js"></script>-->
         <!--<script src="../common/domain/offline/android/androidEncounterService.js"></script>-->
         <!--<script src="../common/patient/offline/android/androidPatientService.js"></script>-->
