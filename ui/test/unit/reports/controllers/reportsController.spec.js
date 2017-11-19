@@ -1,8 +1,7 @@
 describe("ReportsController", function () {
     'use strict';
 
-    var scope, controller, reportServiceMock, scheduleReportPromise, appServiceMock,
-        messagingServiceMock, mockAppDescriptor, spinnerMock, rootScope, mockAuditLogService, configurationServiceMock,
+    var scope, controller, reportServiceMock, scheduleReportPromise, appServiceMock,messagingServiceMock, mockAppDescriptor, spinnerMock, rootScope,
         typicalReportConfig = {
             "1": {
                 "name": "Report with config that has dateRangeRequired=true",
@@ -32,8 +31,6 @@ describe("ReportsController", function () {
 
         messagingServiceMock = jasmine.createSpyObj('messagingService', ['showMessage']);
         spinnerMock = jasmine.createSpyObj('spinner', ['forPromise']);
-        configurationServiceMock = jasmine.createSpyObj('configurationService', ['getConfigurations']);
-        mockAuditLogService = jasmine.createSpyObj("auditLogService", ["auditLog"]);
         var promise = {
             then: function (a) {
                 a();
@@ -55,14 +52,12 @@ describe("ReportsController", function () {
             "HTML": "text/html"
         });
 
-        configurationServiceMock.getConfigurations.and.returnValue(specUtil.simplePromise({enableAuditLog: true }));
+
         controller = $controller;
         controller('ReportsController', {
             $scope: scope,
             appService: appServiceMock,
             reportService: reportServiceMock,
-            auditLogService: mockAuditLogService,
-            configurationService:configurationServiceMock,
             messagingService: messagingServiceMock,
             spinner : spinnerMock,
             $rootScope: rootScope,
@@ -391,39 +386,6 @@ describe("ReportsController", function () {
         expect(rootScope.reportsNotRequiringDateRange[0].startDate).toBe('2014-02-01');
         expect(rootScope.reportsNotRequiringDateRange[0].stopDate).toBe('2015-02-01');
         expect(rootScope.reportsNotRequiringDateRange[0].responseType).toBe('text');
-    });
-
-    it('should audit log the report details when auditLogging is enabled', function () {
-        scope.scheduleReport({
-            config: {},
-            name: "Vitals",
-            startDate: new Date(2014, 1, 1),
-            stopDate: new Date(2015, 1, 1),
-            responseType: 'text/html'
-        });
-
-        var params = {};
-        params.eventType = Bahmni.Reports.AuditLogEventDetails['RUN_REPORT'].eventType;
-        params.message = Bahmni.Reports.AuditLogEventDetails['RUN_REPORT'].message + "~" +
-          JSON.stringify({reportName: 'Vitals'});
-        params.module = "reports";
-
-        expect(mockAuditLogService.auditLog.calls.count()).toBe(1);
-        expect(mockAuditLogService.auditLog).toHaveBeenCalledWith(params);
-
-    });
-
-    it('should not audit log the report details when auditLogging is disabled', function () {
-        configurationServiceMock.getConfigurations.and.returnValue(specUtil.simplePromise({enableAuditLog: false }));
-        scope.scheduleReport({
-            config: {},
-            name: "Vitals",
-            startDate: new Date(2014, 1, 1),
-            stopDate: new Date(2015, 1, 1),
-            responseType: 'text/html'
-        });
-
-        expect(mockAuditLogService.auditLog.calls.count()).toBe(0);
-    });
+    })
 
 });

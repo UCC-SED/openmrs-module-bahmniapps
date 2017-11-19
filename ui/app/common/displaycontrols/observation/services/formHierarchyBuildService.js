@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bahmni.common.displaycontrol.observation')
-    .service('formHierarchyService', ['formService', function (formService) {
+    .service('formHierarchyService', ['observationFormService', function (observationFormService) {
         var self = this;
 
         self.build = function (observations) {
@@ -132,12 +132,8 @@ angular.module('bahmni.common.displaycontrol.observation')
         };
 
         self.createDummyObsGroupForSectionsForForm = function (bahmniObservations) {
-            if (_.isEmpty(bahmniObservations)) {
-                return;
-            }
-
-            formService.getAllForms().then(function (response) {
-                var allForms = response.data;
+            observationFormService.getAllForms().then(function (response) {
+                var allForms = response.data.results;
                 _.forEach(bahmniObservations, function (observation) {
                     var forms = [];
                     _.forEach(observation.value, function (form) {
@@ -145,11 +141,12 @@ angular.module('bahmni.common.displaycontrol.observation')
                             forms.push(form);
                             return;
                         }
-                        var observationForm = self.getFormByFormName(allForms, form.concept.shortName, self.getFormVersion(form.groupMembers));
-                        if (!observationForm) {
+                        if (!self.getFormByFormName(allForms, form.concept.shortName, self.getFormVersion(form.groupMembers))) {
                             return;
                         }
-                        formService.getFormDetail(observationForm.uuid, { v: "custom:(resources:(value))"}).then(function (response) {
+                        observationFormService.getFormDetail(self.getFormByFormName(allForms, form.concept.shortName, self.getFormVersion(form.groupMembers)).uuid, {
+                            v: "custom:(resources:(value))"
+                        }).then(function (response) {
                             var formDetailsAsString = _.get(response, 'data.resources[0].value');
                             if (formDetailsAsString) {
                                 var formDetails = JSON.parse(formDetailsAsString);

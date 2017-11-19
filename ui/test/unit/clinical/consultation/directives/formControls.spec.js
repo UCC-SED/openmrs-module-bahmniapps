@@ -1,16 +1,16 @@
 'use strict';
 
 describe("Form Controls", function () {
-    var element, scope, $compile, spinner, provide, formService, renderHelper;
+    var element, scope, $compile, spinner, provide, observationFormService, renderHelper;
 
     beforeEach(
         function () {
             module('bahmni.clinical');
             module(function ($provide) {
                 provide = $provide;
-                formService = jasmine.createSpyObj('formService', ['getFormDetail']);
+                observationFormService = jasmine.createSpyObj('observationFormService', ['getFormDetail']);
                 spinner = jasmine.createSpyObj('spinner', ['forPromise']);
-                provide.value('formService', formService);
+                provide.value('observationFormService', observationFormService);
                 provide.value('spinner', spinner);
             });
 
@@ -42,7 +42,7 @@ describe("Form Controls", function () {
     }
 
     function mockObservationService(data) {
-        formService.getFormDetail.and.callFake(function () {
+        observationFormService.getFormDetail.and.callFake(function () {
             return {
                 then: function (callback) {
                     return callback({ data: data });
@@ -51,10 +51,10 @@ describe("Form Controls", function () {
         });
     }
 
-    it('should call formService.getFormDetail', function () {
+    it('should call observationFormService.getFormDetail', function () {
         mockObservationService({});
         createElement();
-        expect(formService.getFormDetail).toHaveBeenCalledWith('formUuid', { v: 'custom:(resources:(value))' });
+        expect(observationFormService.getFormDetail).toHaveBeenCalledWith('formUuid', { v: 'custom:(resources:(value))' });
     });
 
     it('should call spinner.forPromise', function () {
@@ -71,7 +71,7 @@ describe("Form Controls", function () {
 
     var createElement = function () {
         document.body.innerHTML += '<div id="formUuid"></div>';
-        element = angular.element("<form-controls patient = \"{ uuid: '123'}\" form=\"{ formName: 'form1', formUuid: 'formUuid' }\" ></form-controls>");
+        element = angular.element("<form-controls form=\"{ formName: 'form1', formUuid: 'formUuid' }\"></form-controls>");
         $compile(element)(scope);
         scope.$digest();
     };

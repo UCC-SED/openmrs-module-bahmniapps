@@ -4,7 +4,25 @@ describe("ManageProgramController", function () {
 
     var scope, messageService, i = 0, programService, _provide, deferred, q, _spinner,
         retrospectiveEntryService, listOfPatientPrograms, programAttributeTypes, allPrograms,
-        controller, rootScope, confirmBox;
+        controller, rootScope, confirmBox, appService, programAttributesHelper;
+
+    programAttributeTypes = [{
+        uuid: '82325788-3f10-11e4-adec-0800271c1b75',
+        sortWeight: 3,
+        name: 'locationName',
+        description: 'Location of the patient program',
+        format: 'java.lang.String',
+        answers: [],
+        required: false
+    }, {
+        uuid: '82325788-3f10-11es-adec-0800271c1b75',
+        sortWeight: 3,
+        name: 'mandatory',
+        description: 'Is the program mandatory',
+        format: 'java.lang.Boolean',
+        answers: [],
+        required: false
+    }];
 
     var setUp = function () {
         return controller('ManageProgramController', {
@@ -21,6 +39,9 @@ describe("ManageProgramController", function () {
         _provide = $provide;
         programService = jasmine.createSpyObj('programService', ['getPatientPrograms', 'getAllPrograms',
             'deletePatientState', 'getProgramAttributeTypes', 'updatePatientProgram']);
+
+        appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
+        programAttributesHelper = jasmine.createSpyObj('programAttributesHelper', ['getAppDescriptor']);
 
         programService.getPatientPrograms.and.callFake(function () {
             deferred = q.defer();
@@ -52,6 +73,42 @@ describe("ManageProgramController", function () {
             return deferred.promise;
         });
 
+        appService.getAppDescriptor = function() {
+            return {
+                getConfigValue: function () {
+                    return {
+                        "programSpecificAttributeTypesDefinition": [
+                            {
+                                "programName": "program",
+                                "attributeTypes": [ "mandatory"]
+                            }
+                        ]
+                    };
+                }
+            };
+        };
+
+        programAttributesHelper = {
+            mapFieldWithConceptValue: function () {
+                return { mandatory: false };
+            },
+            showAttributes: function () {
+                return programAttributeTypes;
+            },
+            sortBasedOnConfiguration: function () {
+                return programAttributeTypes;
+            },
+            filterOnHide: function () {
+                return programAttributeTypes;
+            },
+            getAttributeTypesConfigurationForProgram: function () {
+                return {
+                    programName: 'program',
+                    attributeTypes: [ 'mandatory' ]
+                };
+            }
+        };
+
         confirmBox = jasmine.createSpy('confirmBox');
 
         _spinner = jasmine.createSpyObj('spinner', ['forPromise']);
@@ -59,6 +116,8 @@ describe("ManageProgramController", function () {
         retrospectiveEntryService = jasmine.createSpyObj('retrospectiveEntryService', ['getRetrospectiveDate']);
 
         $provide.value('programService', programService);
+        $provide.value('appService', appService);
+        $provide.value('programAttributesHelper', programAttributesHelper);
         $provide.value('spinner', _spinner);
         $provide.value('messagingService', messageService);
         $provide.value('retrospectiveEntryService', retrospectiveEntryService);
@@ -197,23 +256,6 @@ describe("ManageProgramController", function () {
                 }
             }]
         };
-        programAttributeTypes = [{
-            uuid: '82325788-3f10-11e4-adec-0800271c1b75',
-            sortWeight: 3,
-            name: 'locationName',
-            description: 'Location of the patient program',
-            format: 'java.lang.String',
-            answers: [],
-            required: false
-        }, {
-            uuid: '82325788-3f10-11es-adec-0800271c1b75',
-            sortWeight: 3,
-            name: 'mandatory',
-            description: 'Is the program mandatory',
-            format: 'java.lang.Boolean',
-            answers: [],
-            required: false
-        }];
         allPrograms = [
             {
                 "uuid": "1209df07-b3a5-4295-875f-2f7bae20f86e",
@@ -497,7 +539,16 @@ describe("ManageProgramController", function () {
             scope.setWorkflowStates(allPrograms[0]);
 
             expect(scope.programWorkflowStates.length).toBe(2);
-        })
+        });
+    });
+
+    describe('Set Workflow States', function () {
+        it('should set program attribute type for selected workflow state', function () {
+            scope.$apply(setUp);
+            scope.allProgramAttributeTypes = programAttributeTypes;
+            scope.setWorkflowStates();
+            expect(scope.programAttributeTypes.length).toBe(2);
+        });
     });
 
     describe('get workflows', function () {
@@ -506,6 +557,7 @@ describe("ManageProgramController", function () {
 
             expect(scope.activePrograms[0].program.allWorkflows.length).toBe(1);
         });
+
     });
 
     describe('delete Program', function () {
@@ -534,6 +586,64 @@ describe("ManageProgramController", function () {
             });
 
             scope.confirmDeletion(listOfPatientPrograms.activePrograms[0]);
+        });
+    });
+    describe('handle program attribute update', function () {
+        beforeEach(function () {
+            Bahmni.Clinical.Program.FormConditions.rules = {
+                'mandatory': function(patientProgramAttributes) {
+                    var conditions = {
+                        show: [],
+                        hide: []
+                    };
+                    if (patientProgramAttributes['mandatory'] == true) {
+                        conditions.hide.push('locationName');
+                    } else {
+                        conditions.show.push('locationName');
+                    }
+                    return conditions;
+                }
+            };
+        });
+        it('should update attribute visibility based on condition', function () {
+            scope.$apply(setUp);
+            scope.patientProgramAttributes = { 'mandatory': false };
+            scope.programAttributeTypes = programAttributeTypes[1];
+            scope.programSelected = {
+                "name": "program",
+                "uuid": "1209df07-b3a5-4295-875f-2f7bae20f86e",
+                "retired": false,
+                "description": "program",
+            };
+            scope.handleProgramAttributeUpdate('mandatory');
+            expect(scope.programAttributeTypes.length).toBe(2);
+        });
+        it('should get current attribute types only when form condition is not defined', function () {
+            Bahmni.Clinical.Program.FormConditions.rules = {};
+            scope.$apply(setUp);
+            scope.patientProgramAttributes = { 'mandatory': false };
+            scope.programAttributeTypes = [programAttributeTypes[1]];
+            scope.programSelected = {
+                "name": "program",
+                "uuid": "1209df07-b3a5-4295-875f-2f7bae20f86e",
+                "retired": false,
+                "description": "program",
+            };
+            scope.handleProgramAttributeUpdate('mandatory');
+            expect(scope.programAttributeTypes.length).toBe(1);
+        });
+        it('should reset the current patient program field when one value is hidden', function () {
+            scope.$apply(setUp);
+            scope.patientProgramAttributes = { 'mandatory': true, 'locationName': 'Hyderabad' };
+            scope.programAttributeTypes = [programAttributeTypes[1]];
+            scope.programSelected = {
+                "name": "program",
+                "uuid": "1209df07-b3a5-4295-875f-2f7bae20f86e",
+                "retired": false,
+                "description": "program",
+            };
+            scope.handleProgramAttributeUpdate('mandatory');
+            expect(scope.patientProgramAttributes['locationName']).toBeNull();
         });
     });
 });

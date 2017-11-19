@@ -375,11 +375,11 @@ describe("DocumentController", function () {
             scope.newVisit = newVisit;
             scope.visits = [visit3];
 
-            newVisit.startDatetime = "April 23, 2014";
+            newVisit.startDatetime = "April 25, 2014";
             newVisit.stopDatetime = "";
             expect(scope.isNewVisitDateValid()).toBe(false);
 
-            newVisit.startDatetime = "April 22, 2014";
+            newVisit.startDatetime = "April 26, 2014";
             newVisit.stopDatetime = "";
             expect(scope.isNewVisitDateValid()).toBe(false);
 
@@ -449,18 +449,17 @@ describe("DocumentController", function () {
 
         it('should save the visit document', function () {
             setUp();
-            visit1.visitType.display = 'OPD';
             var visitDocumentServiceSavePromise = specUtil.createServicePromise('visitDocumentService');
             visitDocumentService.save.and.returnValue(visitDocumentServiceSavePromise);
+
             scope.save(visit1);
 
-            expect(visitDocumentService.save).toHaveBeenCalledWith(visitDocument, 'OPD');
+            expect(visitDocumentService.save).toHaveBeenCalledWith(visitDocument);
 
         });
 
         it('should save the existing visit data even there is invalid date entered under new visit section', function(){
             setUp();
-            visit1.visitType.display = 'OPD';
             var newVisit = new Bahmni.DocumentUpload.Visit();
             scope.newVisit = newVisit;
 
@@ -472,7 +471,7 @@ describe("DocumentController", function () {
 
             scope.save(visit1);
 
-            expect(visitDocumentService.save).toHaveBeenCalledWith(visitDocument, 'OPD');
+            expect(visitDocumentService.save).toHaveBeenCalledWith(visitDocument);
 
         });
 
@@ -609,3 +608,5 @@ describe("DocumentController", function () {
         });
     });
 });
+
+

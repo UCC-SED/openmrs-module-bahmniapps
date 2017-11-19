@@ -18,26 +18,9 @@
                 </td>
             </tr>
             <tr ng-if="(disposition.show == true) || getNotes(disposition)" ng-class="::{'has-test-notes': getNotes(disposition)}">
-                <td class="name">
-                    <span class="disposition-state">Proposed Ward: {{::proposedWard}}</span>
-                </td>
-                 <td class="toggle-btn" ng-if="::showDetailsButton(disposition)" toggle="disposition.show">
-                    <button class="toggle fr" ng-class="::{'has-notes': getNotes(disposition)}">
-                        <i class="fa fa-angle-down"></i>
-                        <i class="fa fa-angle-up"></i>
-                    </button>
-                </td>
-                 <td class="toggle-btn" ng-if="::showDetailsButton(disposition)" toggle="disposition.show">
-                    <button class="toggle fr" ng-class="::{'has-notes': getNotes(disposition)}">
-                        <i class="fa fa-angle-down"></i>
-                        <i class="fa fa-angle-up"></i>
-                    </button>
-                </td>
-            </tr>
-            <tr ng-if="(disposition.show == true) || getNotes(disposition)" ng-class="::{'has-test-notes': getNotes(disposition)}">
                 <td colspan="3" class="notes inline-notes" ng-class="::{'test-notes': getNotes(disposition)}">
                     <i class="fa fa-comments left" ng-if="::getNotes(disposition)"></i>
-                    <pre class="left ng-binding">{{::getNotes(disposition)}} </pre>
+                    <pre class="left ng-binding">{{::getNotes(disposition)}}</pre>
                     <div class="footer-note right">
                         <span class="provider">
                             <provider-directive creator-name="{{::disposition.creatorName}}" provider-name="{{::disposition.providers[0].name}}" provider-date="::disposition.dispositionDateTime"></provider-directive>
@@ -45,7 +28,6 @@
                     </div>
                 </td>
             </tr>
-            
             </tbody>
         </table>
         <div ng-show="::noDispositionsMessage">

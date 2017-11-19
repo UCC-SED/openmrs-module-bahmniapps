@@ -1,24 +1,46 @@
 'use strict';
 
 describe('VisitController', function () {
-    var scope, $controller, success, encounterService, patientService, patient, dateUtil, $timeout, spinner,
-        getEncounterPromise, getPatientPromise, stateParams, patientMapper, q, state, appService, appDescriptor,
-        sessionService, messagingService, rootScope, visitService, visitController, location, window, bahmniCookieStore,
-        offlineService, configurationService, auditLogService, params;
+    var scope;
+    var $controller;
+    var success;
+    var encounterService;
+    var patientService;
+    var patient;
+    var dateUtil;
+    var $timeout;
+    var spinner;
+    var getEncounterPromise;
+    var getPatientPromise;
+    var stateParams;
+    var patientMapper;
+    var q;
+    var state;
+    var appService;
+    var appDescriptor;
+    var sessionService;
+    var messagingService;
+    var rootScope;
+    var visitService;
+    var visitController;
+    var location;
+    var window;
+    var bahmniCookieStore;
+    var offlineService;
 
     var stubAllPromise = function () {
         return {
             then: function () {
                 return stubAllPromise();
             }
-        };
+        }
     };
-    var stubOnePromise = function (data) {
+    var stubOnePromise = function () {
         return {
             then: function (callBack) {
-                return callBack(data);
+                return callBack();
             }
-        };
+        }
     };
 
     var searchActiveVisits = function (data) {
@@ -35,6 +57,7 @@ describe('VisitController', function () {
             }
         };
     };
+
 
     var sampleConfig = {
         "conceptData": {
@@ -86,7 +109,7 @@ describe('VisitController', function () {
         $controller = $injector.get('$controller');
         scope = {"$watch": jasmine.createSpy()};
         patientService = jasmine.createSpyObj('patientService', ['get', 'updateImage']);
-        visitService = jasmine.createSpyObj('visitService', ['search', 'endVisit', 'getVisitSummary', 'getVisitType']);
+        visitService = jasmine.createSpyObj('visitService', ['search', 'endVisit', 'getVisitSummary']);
         appService = jasmine.createSpyObj('appService', ['getDescription', 'getAppDescriptor']);
         appDescriptor = jasmine.createSpyObj('appDescriptor', ['getConfigValue', 'getExtensions', 'formatUrl']);
         offlineService = jasmine.createSpyObj('offlineService', ['isOfflineApp']);
@@ -117,13 +140,10 @@ describe('VisitController', function () {
 
         rootScope.currentUser = {privileges: []};
         visitService.search.and.returnValue(searchActiveVisits([]));
-        configurationService = jasmine.createSpyObj('configurationService', ['getConfigurations']);
-        configurationService.getConfigurations.and.returnValue(specUtil.simplePromise({enableAuditLog: true}));
-        auditLogService = jasmine.createSpyObj('auditLogService', ['auditLog']);
-        auditLogService.auditLog.and.returnValue(specUtil.simplePromise({}));
+
     }]));
 
-    function createController () {
+    function createController() {
         visitController = $controller('VisitController', {
             $window: window,
             $scope: scope,
@@ -140,9 +160,7 @@ describe('VisitController', function () {
             messagingService: messagingService,
             visitService: visitService,
             $location: location,
-            offlineService: offlineService,
-            configurationService: configurationService,
-            auditLogService: auditLogService
+            offlineService: offlineService
         });
     }
 
@@ -154,24 +172,17 @@ describe('VisitController', function () {
 
             expect(scope.patient).toBe(patient);
         });
+
     });
 
     describe("submit", function () {
         beforeEach(function () {
             createController();
-            visitController.visitUuid = 'visitUuid';
             getPatientPromise.callThenCallBack(patient);
-            getEncounterPromise.callThenCallBack({data: sampleEncounter});
-            encounterService.create.and.returnValue(specUtil.simplePromise({data: {visitTypeUuid: "visitTypeUuid"}}));
-            var visitTypes = [{display: 'OPD', 'uuid': 'visitTypeUuid'}];
-            visitService.getVisitType.and.returnValue(specUtil.simplePromise({data: {results: visitTypes}}));
+            getEncounterPromise.callThenCallBack({data : sampleEncounter});
+
+            encounterService.create.and.callFake(stubOnePromise);
             scope.patient = {uuid: "21308498-2502-4495-b604-7b704a55522d"};
-            params = {
-                patientUuid: '21308498-2502-4495-b604-7b704a55522d',
-                eventType: 'EDIT_VISIT',
-                message: 'EDIT_VISIT_MESSAGE~{"visitUuid":"visitUuid","visitType":"OPD"}',
-                module: 'registration'
-            };
         });
 
         it("should validate save and reload current page if afterVisitSaveForwardUrl not specified", function (done) {
@@ -181,17 +192,17 @@ describe('VisitController', function () {
                 expect(encounterService.create).toHaveBeenCalled();
                 expect(messagingService.showMessage).toHaveBeenCalledWith('info', 'REGISTRATION_LABEL_SAVED');
                 state.ensureAllTransitionsHappened();
-                expect(configurationService.getConfigurations).toHaveBeenCalledWith(['enableAuditLog']);
-                expect(auditLogService.auditLog).toHaveBeenCalledWith(params);
                 done();
             });
         });
 
         it("should validate save and redirect to url specify by afterVisitSaveForwardUrl", function (done) {
+
             appDescriptor.getConfigValue.and.callFake(function (value) {
                 if (value == 'afterVisitSaveForwardUrl') {
                     return "#/search";
-                } else {
+                }
+                else {
                     return "";
                 }
             });
@@ -209,8 +220,6 @@ describe('VisitController', function () {
                 expect(encounterService.create).toHaveBeenCalled();
                 expect(messagingService.showMessage).toHaveBeenCalledWith('info', 'REGISTRATION_LABEL_SAVED');
                 expect(window.location.href).toBe('#/search');
-                expect(configurationService.getConfigurations).toHaveBeenCalledWith(['enableAuditLog']);
-                expect(auditLogService.auditLog).toHaveBeenCalledWith(params);
                 done();
             });
         });
@@ -220,14 +229,13 @@ describe('VisitController', function () {
             var submit = scope.submit();
             submit.then(function (response) {
                 expect(bahmniCookieStore.put).toHaveBeenCalled();
-                expect(configurationService.getConfigurations).toHaveBeenCalledWith(['enableAuditLog']);
-                expect(auditLogService.auditLog).toHaveBeenCalledWith(params);
                 done();
-            });
-        });
+            })
+        })
     });
 
     describe("close active visit", function () {
+
         it("should set the visitUuid and canCloseVisit if there is an active visit for the patient", function () {
             var patientUuid = 'uuid';
             rootScope.visitLocation = 'visitLocation';
@@ -262,6 +270,7 @@ describe('VisitController', function () {
             expect(visitController.visitUuid).toEqual("");
             expect(scope.canCloseVisit).toBeFalsy();
         });
+
     });
 
     describe('getMessage', function () {
@@ -273,25 +282,21 @@ describe('VisitController', function () {
     });
 
     describe('close visit', function () {
+
         it("should close visit on confirmation", function () {
-            var visitSummary = {admissionDetails: null, dischargeDetails: null, visitType: 'OPD'};
+            var visitSummary = {admissionDetails: null, dischargeDetails: null};
             visitService.getVisitSummary.and.returnValue(getVisitSummaryForUuid(visitSummary));
             window.confirm.and.returnValue(true);
-            visitService.endVisit.and.returnValue(specUtil.createFakePromise());
+            visitService.endVisit.and.returnValue({
+                then: function (successFn) {
+                }
+            });
             createController();
             visitController.visitUuid = 'visitUuid';
 
             scope.closeVisitIfDischarged();
 
             expect(visitService.endVisit).toHaveBeenCalledWith('visitUuid');
-            params = {
-                patientUuid: '21308498-2502-4495-b604-7b704a55522d',
-                eventType: 'CLOSE_VISIT',
-                message: 'CLOSE_VISIT_MESSAGE~{"visitUuid":"visitUuid","visitType":"OPD"}',
-                module: 'registration'
-            };
-            expect(configurationService.getConfigurations).toHaveBeenCalledWith(['enableAuditLog']);
-            expect(auditLogService.auditLog).toHaveBeenCalledWith(params);
         });
 
         it("should not close visit when cancelled", function () {
@@ -303,28 +308,18 @@ describe('VisitController', function () {
             scope.closeVisitIfDischarged();
 
             expect(visitService.endVisit).not.toHaveBeenCalled();
-            expect(configurationService.getConfigurations).not.toHaveBeenCalled();
-            expect(auditLogService.auditLog).not.toHaveBeenCalled();
         });
 
         it('should show error message when the patient is not discharged', function () {
-            var visitSummary = {admissionDetails: {}, dischargeDetails: null, visitType: 'OPD'};
+            var visitSummary = {admissionDetails: {}, dischargeDetails: null};
             visitService.getVisitSummary.and.returnValue(getVisitSummaryForUuid(visitSummary));
 
             createController();
-            visitController.visitUuid = 'visitUuid';
             scope.closeVisitIfDischarged();
 
             expect(messagingService.showMessage).toHaveBeenCalled();
-            params = {
-                patientUuid: '21308498-2502-4495-b604-7b704a55522d',
-                eventType: 'CLOSE_VISIT_FAILED',
-                message: 'CLOSE_VISIT_FAILED_MESSAGE~{"visitUuid":"visitUuid","visitType":"OPD"}',
-                module: 'registration'
-            };
-            expect(configurationService.getConfigurations).toHaveBeenCalledWith(['enableAuditLog']);
-            expect(auditLogService.auditLog).toHaveBeenCalledWith(params);
         });
+
     });
 
     it('update patient image', function () {
@@ -336,5 +331,6 @@ describe('VisitController', function () {
         createController();
         scope.updatePatientImage(image);
         expect(patientService.updateImage).toHaveBeenCalled();
-    });
+    })
+
 });

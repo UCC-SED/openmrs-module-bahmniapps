@@ -1,7 +1,7 @@
 'use strict';
 describe("Program display control", function () {
 
-    var compile, rootScope, programService, translateFilter, _provide;
+    var compile, rootScope, programService, translateFilter, _provide, appService;
     var DateUtil = Bahmni.Common.Util.DateUtil;
     var element, q;
 
@@ -12,8 +12,25 @@ describe("Program display control", function () {
     beforeEach(module(function ($provide) {
         programService = jasmine.createSpyObj('programService', ['getPatientPrograms', 'getProgramStateConfig']);
         translateFilter = jasmine.createSpy('translateFilter');
+        appService = jasmine.createSpy('appService', ['getAppDescriptor']);
         $provide.value('programService', programService);
         $provide.value('translateFilter', translateFilter);
+        $provide.value('appService', appService);
+        appService.getAppDescriptor = function() {
+            return {
+                getConfigValue: function () {
+                    return {
+                        "programSpecificAttributeTypesDefinition": [
+                            {
+                                "programName": "HIV Program",
+                                "attributeTypes": [ "Sample concept attribute"]
+                            }
+                        ]
+                    };
+                }
+            };
+        };
+
         _provide = $provide;
         $provide.value('$state', {params: {}})
     }));
@@ -29,33 +46,48 @@ describe("Program display control", function () {
     var tenDaysAgo = DateUtil.addDays(today, -10);
     var fiveDaysFromToday = DateUtil.addDays(today, 5);
 
+    var attributes = [
+        {
+            "uuid": "6ccf5c9c-9f8c-4e46-b40b-c203b033f6d7",
+            "name": "Sample Regex attribute" ,
+            "value": "123",
+            "attributeType" : {
+                "uuid" : "uuid2",
+                "name": "Sample concept attribute"
+            }
+        }
+    ];
     var data = {
         activePrograms: [{
             "display": "End Fever Program",
             "dateEnrolled": tenDaysAgo.toString(),
             "dateCompleted": null,
-            "outcome": null
+            "outcome": null,
+            "attributes": attributes
         }],
 
         endedPrograms: [{
             "display": "Tuberculosis Program",
             "dateEnrolled": tenDaysAgo.toString(),
             "dateCompleted": fiveDaysFromToday.toString(),
-            "outcome": null
+            "outcome": null,
+            "attributes": attributes
         }, {
             "display": "HIV Program",
             "dateEnrolled": tenDaysAgo.toString(),
             "dateCompleted": today.toString(),
-            "outcome": null
+            "outcome": null,
+            "attributes": attributes
         },
             {
                 "display": "End TB Program",
                 "dateEnrolled": tenDaysAgo.toString(),
                 "dateCompleted": yesterday.toString(),
-                "outcome": null
+                "outcome": null,
+                "attributes": attributes
             },
         ]
-    }
+    };
 
     var compileAndDigest = function () {
         element = angular.element('<programs patient="patient"></programs>');

@@ -11,8 +11,28 @@ angular.module('bahmni.registration')
                 }
             };
 
-            var calculateBirthDate = function () {
+            var getFormattedBirthDay = function (assumedBirthDay) {
+                var birthDate = assumedBirthDay.split("/");
+                return { days: parseInt(birthDate[0]), months: parseInt(birthDate[1]) };
+            };
+
+            var isOnlyBirthYearPresent = function (age) {
+                return age.years && !age.days && !age.months;
+            };
+
+            var getConfiguredBirthDate = function (configuredAssumedBirthDay, dob) {
+                var formattedBirthDay = getFormattedBirthDay(configuredAssumedBirthDay);
+                return moment(dob)
+                    .date(formattedBirthDay.days)
+                    .month(formattedBirthDay.months - 1)
+                    .toDate();
+            };
+
+            var calculateBirthDate = function (configuredAssumedBirthDay) {
                 this.birthdate = age.calculateBirthDate(this.age);
+                if (configuredAssumedBirthDay && isOnlyBirthYearPresent(this.age)) {
+                    this.birthdate = getConfiguredBirthDate(configuredAssumedBirthDay, this.birthdate);
+                }
             };
 
             var fullNameLocal = function () {

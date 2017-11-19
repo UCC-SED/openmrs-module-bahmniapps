@@ -30,10 +30,6 @@ angular.module('bahmni.common.conceptSet')
 
                 var updateObservationsOnRootScope = function () {
                     if ($scope.rootObservation) {
-
-                        console.log($scope.rootObservation);
-
-                        console.log($scope.observations);
                         for (var i = 0; i < $scope.observations.length; i++) {
                             if ($scope.observations[i].concept.uuid === $scope.rootObservation.concept.uuid) {
                                 $scope.observations[i] = $scope.rootObservation;
@@ -202,8 +198,7 @@ angular.module('bahmni.common.conceptSet')
                                 conceptSetValueMap[conceptName.split('|')[0]] = obsValue;
                                 return conceptSetValueMap;
                             }, {});
-                            //var conditions = formCondition(formName, valueMap);
-							   var conditions = formCondition(formName, valueMap, $scope.patient);
+                            var conditions = formCondition(formName, valueMap, $scope.patient);
                             if (!_.isUndefined(conditions)) {
                                 if (conditions.error && !_.isEmpty(conditions.error)) {
                                     messagingService.showMessage('error', conditions.error);

@@ -2,7 +2,23 @@
 
 describe("ensure that the directive program-attributes works properly", function () {
 
-    var scope,filter;
+    var scope, filter, appService;
+    appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
+    appService.getAppDescriptor = function() {
+        return {
+            getConfigValue: function () {
+                return {
+                    "programSpecificAttributeTypesDefinition": [
+                        {
+                            "programName": "Cancer",
+                            "attributeTypes": [ "Sample regex attribute", "Sample date attribute"]
+                        }
+                    ]
+                };
+            }
+        };
+    };
+
 
     beforeEach(module('bahmni.common.uicontrols.programmanagment'));
 
@@ -12,7 +28,8 @@ describe("ensure that the directive program-attributes works properly", function
         scope.programAttributeTypes = attributeTypes;
         filter = $filter;
         $controller('ProgramAttributesController', {
-            $scope: scope
+            $scope: scope,
+            appService: appService
         });
     }));
 
@@ -63,6 +80,12 @@ describe("ensure that the directive program-attributes works properly", function
         };
 
         expect(scope.getValueForAttributeType(attributeType)).toBe("UneducatedShort");
+    });
+
+    it('should filter attribute types based on program if programSpecificAttribDefinition is configured', function () {
+       expect(scope.programAttributeTypes.length).toBe(2);
+       expect(scope.programAttributeTypes[0].name).toBe('Sample regex attribute');
+
     });
 
     var patientProgram = {

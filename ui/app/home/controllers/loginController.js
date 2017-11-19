@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bahmni.home')
-    .controller('LoginController', ['$rootScope', '$scope', '$window', '$location', 'sessionService', 'initialData', 'spinner', '$q', '$stateParams', '$bahmniCookieStore', 'localeService', '$translate', 'userService', 'offlineService', 'configurationService', 'auditLogService',
-        function ($rootScope, $scope, $window, $location, sessionService, initialData, spinner, $q, $stateParams, $bahmniCookieStore, localeService, $translate, userService, offlineService, configurationService, auditLogService) {
+    .controller('LoginController', ['$rootScope', '$scope', '$window', '$location', 'sessionService', 'initialData', 'spinner', '$q', '$stateParams', '$bahmniCookieStore', 'localeService', '$translate', 'userService', 'offlineService',
+        function ($rootScope, $scope, $window, $location, sessionService, initialData, spinner, $q, $stateParams, $bahmniCookieStore, localeService, $translate, userService, offlineService) {
             var redirectUrl = $location.search()['from'];
             var landingPagePath = "/dashboard";
             var loginPagePath = "/login";
@@ -22,20 +22,6 @@ angular.module('bahmni.home')
             var findLanguageByLocale = function (localeCode) {
                 return _.find(localeLanguages, function (localeLanguage) {
                     return localeLanguage.code == localeCode; });
-            };
-
-            var logAuditForLoginAttempts = function (state, isFailedEvent) {
-                configurationService.getConfigurations(['enableAuditLog']).then(function (result) {
-                    if (result.enableAuditLog) {
-                        var params = {};
-                        params.eventType = Bahmni.Common.AuditLogEventDetails[state].eventType;
-                        params.message = Bahmni.Common.AuditLogEventDetails[state].message;
-                        params.message = isFailedEvent ? params.message + "~" + JSON.stringify({userName: $scope.loginInfo.username}) : params.message;
-                        if ($scope.loginInfo.username) {
-                            auditLogService.auditLog(params);
-                        }
-                    }
-                });
             };
 
             var promise = localeService.allowedLocalesList();
@@ -159,11 +145,9 @@ angular.module('bahmni.home')
                                 function () { deferrable.resolve(); },
                                 function (error) { deferrable.reject(error); }
                             );
-                            logAuditForLoginAttempts("USER_LOGIN_SUCCESS");
                         }, function (error) {
                             $scope.errorMessageTranslateKey = error;
                             deferrable.reject(error);
-                            logAuditForLoginAttempts("USER_LOGIN_FAILED", true);
                         }
                         );
                     },
@@ -175,7 +159,6 @@ angular.module('bahmni.home')
                             delete $scope.loginInfo.otp;
                         }
                         deferrable.reject(error);
-                        logAuditForLoginAttempts("USER_LOGIN_FAILED", true);
                     }
                 );
 

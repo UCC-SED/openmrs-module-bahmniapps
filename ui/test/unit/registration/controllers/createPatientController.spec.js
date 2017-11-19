@@ -494,4 +494,29 @@ describe('CreatePatientController', function() {
         expect(scopeMock.disablePhotoCapture).toBeTruthy();
     });
 
+    it("should return the dd/mm if there is assumedBirthDay config defined as 15/07", function () {
+        appServiceMock.getAppDescriptor = function() {
+            return {
+                getConfigValue: function(config) {
+                    if(config === "assumedBirthDay"){
+                        return "15/07";
+                    }
+                }
+            };
+        };
+        $aController('CreatePatientController', {
+            $scope: scopeMock,
+            $rootScope: rootScopeMock,
+            $state: stateMock,
+            patientService: patientServiceMock,
+            preferences: preferencesMock,
+            spinner: spinnerMock,
+            appService: appServiceMock,
+            ngDialog: ngDialogMock,
+            offlineService: {}
+        });
+        expect(scopeMock.assumedBirthDay).toBe("15/07");
+    });
+
+
 });

@@ -11,11 +11,13 @@ angular.module('bahmni.registration')
             }
         };
     })
-    .controller('PatientRelationshipController', ['$window', '$scope', '$rootScope', 'spinner', 'patientService', 'providerService',
-        function ($window, $scope, $rootScope, spinner, patientService, providerService) {
+    .controller('PatientRelationshipController', ['$window', '$scope', '$rootScope', 'spinner', 'patientService', 'providerService', 'appService',
+        function ($window, $scope, $rootScope, spinner, patientService, providerService, appService) {
             $scope.addPlaceholderRelationship = function () {
                 $scope.patient.newlyAddedRelationships.push({});
             };
+
+            $scope.hideRelationShipDuration = appService.getAppDescriptor().getConfigValue('hideRelationShipDuration');
 
             $scope.removeRelationship = function (relationship, index) {
                 if (relationship.uuid) {
