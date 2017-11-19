@@ -282,6 +282,34 @@ angular.module('consultation')
                         return ordersTabInitialization();
                     }
                 }
+            }).state('patient.dashboard.show.referral', {
+                url: '/referral',
+                params: {
+                    cachebuster: null
+                },
+                views: {
+                    'consultation-content': {
+                        templateUrl: 'consultation/views/referral.html',
+                        controller: 'ReferralController'
+                    }
+                },
+                resolve: {
+                    referralConceptSet: function (referralTabInitialization) {
+                        return referralTabInitialization();
+                    }
+                }
+            })
+            .state('patient.dashboard.show.printPriv', {
+                url: '/printPriv',
+                params: {
+                    cachebuster: null
+                },
+                views: {
+                    'consultation-content': {
+                        templateUrl: 'consultation/views/printPriv.html',
+                        controller: 'printPrivController'
+                    }
+                }
             })
             .state('patient.dashboard.show.bacteriology', {
                 url: '/bacteriology',
