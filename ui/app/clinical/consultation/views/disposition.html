@@ -5,18 +5,10 @@
     </div>
     <div class="box disposition-tab">
         <form ng-submit="submit()">
-			 <div class="dispositionNotesWrap">
             <label for="dispositionAction">Disposition Type: </label>
             <select id="dispositionAction" ng-model="dispositionCode" ng-options="d.code as d.name for d in dispositionActions" ng-change="clearDispositionNote();"  ng-disabled="isRetrospectiveMode()">
                 <option value=""></option>
             </select>
-            </div>
-            <div class="dispositionNotesWrap">
-            <label for="wardAction">Proposed Ward: </label>
-            <select id="wardAction" ng-model="wardCode" ng-options="ward.name.display as ward.name.display for ward in wards"  ng-disabled="isRetrospectiveMode()">
-                <option value=""></option>
-            </select>
-            </div>
             <div class="dispositionNotesWrap">
                 <label class="disposition-notes" for="dispositionNotes">Disposition Notes: </label>
                 <p ng-if="showWarningForEarlierDispositionNote()" class="caution" >
