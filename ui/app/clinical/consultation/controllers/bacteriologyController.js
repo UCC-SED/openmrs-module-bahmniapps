@@ -40,6 +40,7 @@ angular.module('bahmni.clinical')
                 $scope.allSamples = sampleSource !== undefined && _.map(sampleSource.answers, function (answer) {
                     return new Bahmni.Common.Domain.ConceptMapper().map(answer);
                 });
+
                 if ($scope.savedSpecimens) {
                     $scope.savedSpecimens = _.sortBy($scope.savedSpecimens, 'dateCollected').reverse();
                 }
@@ -50,7 +51,9 @@ angular.module('bahmni.clinical')
             };
 
             $scope.createNewSpecimen = function () {
+                new Bahmni.Clinical.Ob
                 var newSpecimen = new Bahmni.Clinical.Specimen(null, $scope.allSamples);
+                console.log($scope.newSpecimens);
                 $scope.newSpecimens.push(newSpecimen);
             };
 
