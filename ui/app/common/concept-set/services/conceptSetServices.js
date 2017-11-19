@@ -14,21 +14,7 @@ angular.module('bahmni.common.conceptSet')
             var url = Bahmni.Common.Constants.encounterModifierUrl;
             return $http.post(url, encounterData, {
                 withCredentials: true,
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                }
-            });
-        };
-
-        var getActiveVisitByPatientUuid = function (patientUuid) {
-            var url = Bahmni.Common.Constants.visitByPatientUuid;
-            return $http.get(url, {
-                params: {
-                    patient: patientUuid,
-                    includeInactive: 'false',
-                    v: "custom:(uuid,visitId,visitType,patient,encounters:(uuid,encounterType,voided,orders:(uuid,orderType,voided,concept:(uuid,set,name),),obs:(uuid,value,concept,obsDatetime,groupMembers:(uuid,concept:(uuid,name),obsDatetime,value:(uuid,name),groupMembers:(uuid,concept:(uuid,name),value:(uuid,name),groupMembers:(uuid,concept:(uuid,name),value:(uuid,name)))))))"
-                }
+                headers: {"Accept": "application/json", "Content-Type": "application/json"}
             });
         };
 
@@ -46,7 +32,7 @@ angular.module('bahmni.common.conceptSet')
         return {
             getConcept: getConcept,
             getComputedValue: getComputedValue,
-            getObsTemplatesForProgram: getObsTemplatesForProgram,
-            getActiveVisitByPatientUuid: getActiveVisitByPatientUuid
+            getObsTemplatesForProgram: getObsTemplatesForProgram
         };
     }]);
+

@@ -1,22 +1,16 @@
 'use strict';
 
 angular.module('bahmni.common.domain')
-    .factory('dispositionService', ['$http', function ($http) {
-        var getDispositionActions = function () {
+    .factory('referralService', ['$http', function ($http) {
+        var getReferralActions = function () {
             return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl +
-                "&name=" + Bahmni.Common.Constants.dispositionConcept +
+                "&name=" + Bahmni.Common.Constants.referralConcept +
                 "&v=custom:(uuid,name,answers:(uuid,name,mappings))", {cache: true});
         };
 
-        var getproposedWards = function () {
+        var getReferralNoteConcept = function () {
             return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl +
-                "&name=" + Bahmni.Common.Constants.proposedWardsConcept +
-                "&v=custom:(uuid,name,answers:(uuid,name,mappings))", {cache: true});
-        };
-
-        var getDispositionNoteConcept = function () {
-            return $http.get(Bahmni.Common.Constants.conceptSearchByFullNameUrl +
-                "&name=" + Bahmni.Common.Constants.dispositionNoteConcept +
+                "&name=" + Bahmni.Common.Constants.referralNoteConcept +
                 "&v=custom:(uuid,name:(name))", {cache: true});
         };
 
@@ -36,9 +30,8 @@ angular.module('bahmni.common.domain')
         };
 
         return {
-            getDispositionActions: getDispositionActions,
-            getproposedWards:getproposedWards,
-            getDispositionNoteConcept: getDispositionNoteConcept,
+            getReferralActions: getReferralActions,
+            getReferralNoteConcept: getReferralNoteConcept,
             getDispositionByVisit: getDispositionByVisit,
             getDispositionByPatient: getDispositionByPatient
         };

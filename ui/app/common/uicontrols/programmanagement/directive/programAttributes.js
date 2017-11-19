@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('bahmni.common.uicontrols.programmanagment')
-    .controller('ProgramAttributesController', ['$scope', 'appService', function ($scope, appService) {
+    .controller('ProgramAttributesController', ['$scope', function ($scope) {
         $scope.getProgramAttributesMap = function () {
             var programAttributesMap = {};
             var programAttributes = $scope.patientProgram.attributes;
@@ -49,47 +49,7 @@ angular.module('bahmni.common.uicontrols.programmanagment')
             return format == "org.bahmni.module.bahmnicore.customdatatype.datatype.CodedConceptDatatype";
         };
 
-        var sortProgramAttributeTypesBasedOnConfiguration = function (availableProgramAttributeTypesForProgram, currentProgramMapConfig) {
-            var sortProgramAttributeTypes = function (programAttributeType) {
-                return _.find(availableProgramAttributeTypesForProgram, function (attributeType) {
-                    return attributeType.name === programAttributeType;
-                });
-            };
-            return _.map(currentProgramMapConfig.attributeTypes, sortProgramAttributeTypes);
-        };
-
-        var getProgramAttributeTypeAssignedToProgram = function (currentProgram, programAttributeTypes, programAttributeTypeMapConfig) {
-            var findCurrentProgramConfig = function (programConfig) {
-                return currentProgram.name === programConfig.programName;
-            };
-            var filterProgramAttributes = function (programAttributeType) {
-                if (!currentProgramMapConfig) {
-                    return true;
-                }
-                return _.indexOf(currentProgramMapConfig.attributeTypes, programAttributeType.name) >= 0;
-            };
-            if (!programAttributeTypeMapConfig) {
-                return programAttributeTypes;
-            }
-            var currentProgramMapConfig = _.find(programAttributeTypeMapConfig, findCurrentProgramConfig);
-            var availableProgramAttributeTypesForProgram = _.filter(programAttributeTypes, filterProgramAttributes);
-            if (!currentProgramMapConfig) {
-                return availableProgramAttributeTypesForProgram;
-            } else {
-                return sortProgramAttributeTypesBasedOnConfiguration(availableProgramAttributeTypesForProgram, currentProgramMapConfig);
-            }
-        };
-
-        var init = function () {
-            var programSpecificAttributeTypesDefinition = appService
-                .getAppDescriptor()
-                .getConfigValue("program").programSpecificAttributeTypesDefinition;
-
-            $scope.programAttributeTypes = getProgramAttributeTypeAssignedToProgram($scope.patientProgram.program, $scope.programAttributeTypes, programSpecificAttributeTypesDefinition);
-        };
-
         $scope.patientProgram.patientProgramAttributes = $scope.getProgramAttributesMap();
-        init();
     }])
     .directive('programAttributes', function () {
         return {

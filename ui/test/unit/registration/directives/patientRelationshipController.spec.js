@@ -1,16 +1,11 @@
 'use strict';
 
 describe('PatientRelationshipController', function () {
-    var _appService, rootScope, scope, mockAppDescriptor;
+
     var patientServiceMock = jasmine.createSpyObj('patientService', ['searchByIdentifier']);
     var providerServiceMock = jasmine.createSpyObj('providerService', ['search']);
-
-    mockAppDescriptor = jasmine.createSpyObj('appDescriptor', ['getConfigValue']);
-    mockAppDescriptor.getConfigValue.and.returnValue({"hideRelationShipDuration": true});
-
-    _appService = jasmine.createSpyObj('appService', ['getAppDescriptor']);
-    _appService.getAppDescriptor.and.returnValue(mockAppDescriptor);
-
+    var rootScope;
+    var scope;
 
     var patientServiceSearchPromise = specUtil.respondWith({data: {results: [{uuid: "123"}]}});
     patientServiceMock.searchByIdentifier.and.returnValue(patientServiceSearchPromise);
@@ -46,7 +41,6 @@ describe('PatientRelationshipController', function () {
             $controller('PatientRelationshipController', {
                 $scope: scope,
                 $rootScope: rootScope,
-                appService: _appService,
                 spinner: spinner,
                 patientService: patientServiceMock,
                 providerService: providerServiceMock
@@ -339,10 +333,4 @@ describe('PatientRelationshipController', function () {
 
     });
 
-    describe("hideRelationShipDuration", function () {
-        it("should hide relationship till box when hideRelationShipDuration is set to true", function () {
-            expect(_appService.getAppDescriptor().getConfigValue).toHaveBeenCalledWith("hideRelationShipDuration");
-            expect(scope.hideRelationShipDuration).toBeTruthy();
-        });
-    });
 });

@@ -2,7 +2,8 @@
 
 angular.module('bahmni.registration')
     .controller('VisitController', ['$window', '$scope', '$rootScope', '$state', '$bahmniCookieStore', 'patientService', 'encounterService', '$stateParams', 'spinner', '$timeout', '$q', 'appService', 'openmrsPatientMapper', 'contextChangeHandler', 'messagingService', 'sessionService', 'visitService', '$location', '$translate', 'offlineService',
-        function ($window, $scope, $rootScope, $state, $bahmniCookieStore, patientService, encounterService, $stateParams, spinner, $timeout, $q, appService, openmrsPatientMapper, contextChangeHandler, messagingService, sessionService, visitService, $location, $translate, offlineService) {
+        'configurationService', 'auditLogService',
+        function ($window, $scope, $rootScope, $state, $bahmniCookieStore, patientService, encounterService, $stateParams, spinner, $timeout, $q, appService, openmrsPatientMapper, contextChangeHandler, messagingService, sessionService, visitService, $location, $translate, offlineService, configurationService, auditLogService) {
             var vm = this;
             var patientUuid = $stateParams.patientUuid;
             var extensions = appService.getAppDescriptor().getExtensions("org.bahmni.registration.conceptSetGroup.observations", "config");
@@ -75,7 +76,18 @@ angular.module('bahmni.registration')
 
                 var createPromise = offlineService.isOfflineApp() ? encounterPromise() : encounterService.create($scope.encounter);
                 spinner.forPromise(createPromise);
-                return createPromise;
+                return createPromise.then(function (response) {
+                    var visitType, visitTypeUuid;
+                    visitTypeUuid = response.data.visitTypeUuid;
+                    visitService.getVisitType().then(function (response) {
+                        visitType = _.find(response.data.results, function (type) {
+                            if (type.uuid === visitTypeUuid) {
+                                return type;
+                            }
+                        });
+                        log(patientUuid, vm.visitUuid, visitType.display, "EDIT_VISIT");
+                    });
+                });
             };
 
             var encounterPromise = function () {
@@ -115,22 +127,38 @@ angular.module('bahmni.registration')
                 });
             };
 
+            var log = function (patientUuid, visitUuid, visitType, visitStatus) {
+                configurationService.getConfigurations(['enableAuditLog']).then(function (result) {
+                    if (result.enableAuditLog) {
+                        var params = {};
+                        params.patientUuid = patientUuid;
+                        params.eventType = Bahmni.Common.AuditLogEventDetails[visitStatus].eventType;
+                        params.message = Bahmni.Common.AuditLogEventDetails[visitStatus].message + '~' +
+                                         JSON.stringify({visitUuid: visitUuid, visitType: visitType});
+                        params.module = "registration";
+                        auditLogService.auditLog(params);
+                    }
+                });
+            };
+
             $scope.closeVisitIfDischarged = function () {
                 visitService.getVisitSummary(vm.visitUuid).then(function (response) {
                     var visitSummary = response.data;
                     if (visitSummary.admissionDetails && !visitSummary.dischargeDetails) {
                         messagingService.showMessage("error", 'REGISTRATION_VISIT_CANNOT_BE_CLOSED');
+                        log(patientUuid, vm.visitUuid, visitSummary.visitType, "CLOSE_VISIT_FAILED");
                     } else {
-                        closeVisit();
+                        closeVisit(visitSummary.visitType);
                     }
                 });
             };
 
-            var closeVisit = function () {
+            var closeVisit = function (visitType) {
                 var confirmed = $window.confirm($translate.instant("REGISTRATION_CONFIRM_CLOSE_VISIT"));
                 if (confirmed) {
                     visitService.endVisit(vm.visitUuid).then(function () {
                         $location.url(Bahmni.Registration.Constants.patientSearchURL);
+                        log(patientUuid, vm.visitUuid, visitType, "CLOSE_VISIT");
                     });
                 }
             };

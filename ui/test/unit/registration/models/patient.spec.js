@@ -42,21 +42,6 @@ describe("Patient", function () {
         });
     });
 
-    describe("calculateBirthDate", function () {
-       it("should give birth date based on the assumed birth day when only years is provided", function () {
-           var birthdate = new Date("06/22/2005");
-           patient.age = ageFactory.create(12);
-           patient.calculateBirthDate();
-           spyOn(ageFactory, 'calculateBirthDate').and.returnValue(birthdate);
-
-           patient.calculateBirthDate("15/07");
-           var July = 6;
-           expect(patient.birthdate.getMonth()).toBe(July);
-           expect(patient.birthdate.getDate()).toBe(15);
-           expect(patient.birthdate.getFullYear()).toBe(2005);
-       });
-    });
-
     describe("fullNameLocal", function () {
         it("should be combination of givenNameLocal and familyNameLocal", function () {
             patient.givenNameLocal = "राम";
